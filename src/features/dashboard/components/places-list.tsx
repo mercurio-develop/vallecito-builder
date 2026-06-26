@@ -14,6 +14,7 @@ interface PlacesListProps {
 const CATEGORY_ICONS: Record<string, any> = {
   DINING: GlassWater,
   STAY: Building2,
+  STAYS: Building2,
   EXPERIENCE: CompassIcon,
   TRANSPORT: MapPin,
   VIEWPOINT: Eye,
@@ -23,11 +24,18 @@ const CATEGORY_ICONS: Record<string, any> = {
   WAYPOINT: MapPin,
   WATER_SOURCE: GlassWater,
   ARCHEOLOGICAL_SITE: Landmark,
+  TEXTILES: Building2,
+  BOLETO: Landmark,
+  WELLNESS: GlassWater,
+  SPIRITUAL: Landmark,
+  CULTURE: Landmark,
+  ADVENTURE: Compass,
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
   DINING: "bg-amber-50 text-amber-700 border-amber-200/50",
   STAY: "bg-purple-50 text-purple-700 border-purple-200/50",
+  STAYS: "bg-purple-50 text-purple-700 border-purple-200/50",
   EXPERIENCE: "bg-emerald-50 text-emerald-700 border-emerald-200/50",
   TRANSPORT: "bg-blue-50 text-blue-700 border-blue-200/50",
   VIEWPOINT: "bg-sky-50 text-sky-700 border-sky-200/50",
@@ -37,6 +45,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   WAYPOINT: "bg-slate-50 text-slate-700 border-slate-200/50",
   WATER_SOURCE: "bg-cyan-50 text-cyan-700 border-cyan-200/50",
   ARCHEOLOGICAL_SITE: "bg-teal-50 text-teal-700 border-teal-200/50",
+  TEXTILES: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200/50",
+  BOLETO: "bg-yellow-50 text-yellow-700 border-yellow-200/50",
+  WELLNESS: "bg-lime-50 text-lime-700 border-lime-200/50",
+  SPIRITUAL: "bg-pink-50 text-pink-700 border-pink-200/50",
+  CULTURE: "bg-violet-50 text-violet-700 border-violet-200/50",
+  ADVENTURE: "bg-emerald-50 text-emerald-700 border-emerald-200/50",
 }
 
 export function PlacesList({ initialPlaces = [], currentUser }: PlacesListProps) {
@@ -56,7 +70,10 @@ export function PlacesList({ initialPlaces = [], currentUser }: PlacesListProps)
       (place.description && place.description.toLowerCase().includes(search.toLowerCase())) ||
       (place.tagline && place.tagline.toLowerCase().includes(search.toLowerCase()))
     
-    const matchesCategory = selectedCategory === "ALL" || place.category === selectedCategory
+    const matchesCategory = 
+      selectedCategory === "ALL" || 
+      place.category === selectedCategory ||
+      (selectedCategory === "STAY" && place.category === "STAYS")
     
     return matchesSearch && matchesCategory
   })

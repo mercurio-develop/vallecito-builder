@@ -81,36 +81,36 @@ async function fetchBusinessesInternal({ query = "", category = "", loc = "", ra
   if (q && !targetCategory) {
     const qLower = q.toLowerCase();
     if (qLower.includes("ayahuasca") || qLower.includes("retreat") || qLower.includes("ashram") || qLower.includes("spiritual") || qLower.includes("san pedro") || qLower.includes("shaman")) {
-      targetCategory = "Spiritual"; isHeuristicMatch = true;
+      targetCategory = "SPIRITUAL"; isHeuristicMatch = true;
     }
     else if (qLower.includes("massage") || qLower.includes("spa") || qLower.includes("wellness") || qLower.includes("recovery") || qLower.includes("yoga")) { 
-      targetCategory = "Wellness"; isHeuristicMatch = true; 
+      targetCategory = "WELLNESS"; isHeuristicMatch = true; 
     }
     else if (qLower.includes("tour") || qLower.includes("trekking") || qLower.includes("expedition") || qLower.includes("travel") || qLower.includes("agency") || qLower.includes("agencia")) { 
-      targetCategory = "Agency"; isHeuristicMatch = true; 
+      targetCategory = "AGENCY"; isHeuristicMatch = true; 
     }
     else if (qLower.includes("atv") || qLower.includes("hiking") || qLower.includes("adventure") || qLower.includes("trail") || qLower.includes("llama")) { 
-      targetCategory = "Adventure"; isHeuristicMatch = true; 
+      targetCategory = "ADVENTURE"; isHeuristicMatch = true; 
     }
     else if (qLower.includes("picantería") || qLower.includes("restaurant") || qLower.includes("food") || qLower.includes("dining") || qLower.includes("eat") || qLower.includes("coffee") || qLower.includes("vegan") || qLower.includes("cafe")) { 
-      targetCategory = "Dining"; isHeuristicMatch = true; 
+      targetCategory = "DINING"; isHeuristicMatch = true; 
     }
     else if (qLower.includes("hotel") || qLower.includes("stays") || qLower.includes("sleep") || qLower.includes("boutique") || qLower.includes("lodging") || qLower.includes("hostel")) { 
-      targetCategory = "Stays"; isHeuristicMatch = true; 
+      targetCategory = "STAYS"; isHeuristicMatch = true; 
     }
     else if (qLower.includes("textile") || qLower.includes("tejido") || qLower.includes("weaving") || qLower.includes("artesanía") || qLower.includes("artisan") || qLower.includes("tejedoras")) { 
-      targetCategory = "Textiles"; isHeuristicMatch = true; 
+      targetCategory = "TEXTILES"; isHeuristicMatch = true; 
     }
     else if (qLower.includes("market") || qLower.includes("culture") || qLower.includes("art") || qLower.includes("textile") || qLower.includes("ruins")) { 
-      targetCategory = "Culture"; isHeuristicMatch = true; 
+      targetCategory = "CULTURE"; isHeuristicMatch = true; 
     }
     else if (qLower.includes("transport") || qLower.includes("taxi") || qLower.includes("airport") || qLower.includes("driver") || qLower.includes("shuttle") || qLower.includes("transfer")) { 
-      targetCategory = "Transport"; isHeuristicMatch = true; 
+      targetCategory = "TRANSPORT"; isHeuristicMatch = true; 
     }
   }
 
   const andConditions: any[] = [
-    { category: { notIn: ['AGENCY', 'Agency', 'agency'] } }
+    { category: { not: 'AGENCY' } }
   ]
 
   // Visibility/Permissions conditions
@@ -124,24 +124,10 @@ async function fetchBusinessesInternal({ query = "", category = "", loc = "", ra
   andConditions.push({ OR: visibilityConditions })
 
   if (targetCategory) {
-    const categories = targetCategory.split(',').map(c => c.trim()).filter(Boolean)
-    if (categories.length > 0) {
-      const expandedCategories = new Set<string>();
-      for (const cat of categories) {
-        if (cat.toUpperCase() === 'AGENCY') continue;
-        expandedCategories.add(cat);
-        expandedCategories.add(cat.toUpperCase());
-        expandedCategories.add(cat.toLowerCase());
-        expandedCategories.add(cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase());
-        if (cat.toUpperCase() === 'BOLETO') {
-          expandedCategories.add('Tourist Ticket');
-          expandedCategories.add('TOURIST TICKET');
-          expandedCategories.add('tourist ticket');
-        }
-      }
-      if (expandedCategories.size > 0) {
-        andConditions.push({ category: { in: Array.from(expandedCategories) } });
-      }
+    const categories = targetCategory.split(',').map(c => c.trim().toUpperCase()).filter(Boolean)
+    const filtered = categories.filter(c => c !== 'AGENCY')
+    if (filtered.length > 0) {
+      andConditions.push({ category: { in: filtered } });
     }
   }
 
@@ -157,7 +143,7 @@ async function fetchBusinessesInternal({ query = "", category = "", loc = "", ra
         { name: { contains: q.toLowerCase() } },
         { name: { contains: titleCase } },
         { name: { contains: q.toUpperCase() } },
-        { category: { contains: q } },
+        { category: { contains: q.toUpperCase() } },
         { description: { contains: q } },
         { description: { contains: q.toLowerCase() } },
         { description: { contains: titleCase } },
