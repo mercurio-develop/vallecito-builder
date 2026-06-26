@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Business {
+  id       String @id @default(cuid())
+  slug     String @unique
+  name     String
+  category String @default("DINING")
+
+  lat          Float?
+  lng          Float?
+  rating       Float?
+  reviewsCount Int     @default(0)
+  imageUrl     String  @default("")
+  heroImages   String  @default("[]")
+  whatsapp     String?
+  isClaimed    Boolean @default(false)
+  isAsociado   Boolean @default(false)
+  isFeatured   Boolean @default(false)
+  locationSlug String  @default("")
+
+  tagline            String  @default("")
+  description        String  @default("")
+  contactEmail       String  @default("")
+  socialLinks        String  @default("{}")
+  instagramHandle    String?
+  instagramFollowers Int     @default(0)
+
+  priceTier              String @default("$$")
+  marginTier             String @default("STANDARD")
+  commissionRate         Float  @default(0.05)
+  viewsCount             Int    @default(0)
+  whatsappClicksCount    Int    @default(0)
+  aiRecommendationsCount Int    @default(0)
+
+  vehicleType  String?
+  capacity     Int?
+  serviceZones String  @default("[]")
+
+  guideName    String?
+  seoMetaTitle String?
+  seoMetaDesc  String?
+
+  specialties  String @default("[]")
+  themeConfig  String @default("{}")
+  featuresJson String @default("[]")
+  qrCodeUrl    String?
+
+  tourPackages TourPackage[]
+  trips        Trip[]
+  agencyId     String?
+  isShared     Boolean @default(true)
+  agency       Agency? @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+}
+
+model TourPackage {
+  id            String    @id @default(cuid())
+  businessId    String?
+  title         String
+  tagline       String    @default("")
+  sector        String
+  pace          String    @default("BALANCED")
+  description   String
+  basePriceUsd  Float
+  difficulty    String    @default("MODERATE")
+  maxAltitude   String    @default("")
+  durationDays  Int       @default(1)
+  durationStr   String    @default("")
+  elevation     String    @default("")
+  bestSeason    String    @default("")
+  packageType   String    @default("SINGLE_DAY")
+  tags          String    @default("")
+  included      String    @default("[]")
+  notIncluded   String    @default("[]")
+  highlights    String    @default("[]")
+  requirements  String    @default("[]")
+  itineraryJson String    @default("[]")
+  galleryJson   String    @default("[]")
+  heroImage     String?
+  business      Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  tripDays      TripDay[]
+}
+
+enum TravelerArchetype {
+  LIVING_CULTURE
+  GASTRONOMIC
+  LUXURY_WELLNESS
+  SPIRITUAL
+  MOUNTAIN_EXPLORER
+}
+
+enum TripStatus {
+  DRAFT
+  PROPOSED
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  TEMPLATE
+  ARCHIVED
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  AGENCY_OWNER
+  AGENCY_STAFF
+}
+
+model Agency {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  logoUrl      String?
+  primaryColor String   @default("#f43f5e")
+  tagline      String   @default("")
+  email        String   @unique
+  whatsapp     String?
+  website      String?
+  createdAt    DateTime @default(now())
+  users        User[]
+  trips        Trip[]
+  businesses   Business[]
+}
+
+model User {
+  id           String    @id @default(cuid())
+  agencyId     String?
+  email        String    @unique
+  passwordHash String
+  name         String    @default("")
+  role         UserRole  @default(AGENCY_STAFF)
+  createdAt    DateTime  @default(now())
+  agency       Agency?   @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Trip {
+  id                 String             @id @default(cuid())
+  userId             String?
+  businessId         String?
+  tripTitle          String
+  startDate          DateTime
+  endDate            DateTime
+  paxCount           Int                @default(1)
+  baseCampStrategy   String
+  archetype          TravelerArchetype?
+  intensity          Int?
+  shareToken         String?            @unique
+  status             TripStatus         @default(DRAFT)
+  agencyId           String?
+  agency             Agency?            @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+  acceptedAt         DateTime?
+  clientMessage      String?
+  internalNotes      String?
+  totalPriceUsd      Float              @default(0)
+  createdAt          DateTime   @default(now())
+  isVerifiedTemplate Boolean    @default(false)
+  templateVibeTags   String?
+  clonedFromId       String?
+  travelers          Traveler[]
+  business           Business?  @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  days               TripDay[]
+}
+
+model Traveler {
+  id                  String   @id @default(cuid())
+  tripId              String
+  isLeadGuest         Boolean  @default(false)
+  firstName           String
+  lastName            String
+  passportNumber      String
+  nationality         String
+  dateOfBirth         DateTime
+  email               String   @default("")
+  whatsappNumber      String?
+  dietaryRestrictions String?
+  medicalNotes        String?
+  passportPhotoUrl    String?
+  insurancePolicyUrl  String?
+  liabilityWaiverUrl  String?
+  createdAt           DateTime @default(now())
+  trip                Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model TripDay {
+  id             String       @id @default(cuid())
+  tripId         String
+  dayNumber      Int
+  date           DateTime
+  sleepTown      String
+  tourPackageId  String?
+  dayTheme       String
+  guideNotes     String?
+  startTime      String       @default("08:00 AM")
+  meetingPoint   String?
+  eventsJson     String       @default("[]")
+  isAgencyLocked Boolean      @default(true)
+  isCustomized   Boolean      @default(false)
+  tourPackage    TourPackage? @relation(fields: [tourPackageId], references: [id])
+  trip           Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+enum RideStatus {
+  HOLD_SECURED
+  DRIVER_ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum MessageSender {
+  TOURIST
+  DRIVER
+  SYSTEM
+}
+
+model Driver {
+  id             String        @id @default(cuid())
+  name           String
+  whatsappNumber String
+  carModel       String
+  licensePlate   String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  rides          RideBooking[]
+}
+
+model RideBooking {
+  id               String        @id @default(cuid())
+  touristName      String?
+  touristPhone     String?
+  pickupLocation   String
+  dropoffLocation  String
+  priceUsd         Float
+  stripeIntentId   String?       @unique
+  status           RideStatus    @default(HOLD_SECURED)
+  scheduledFor     DateTime?
+  etaMinutes       Int?
+  driverId         String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  driver           Driver?       @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  messages         RideMessage[]
+}
+
+model RideMessage {
+  id        String        @id @default(cuid())
+  rideId    String
+  sender    MessageSender
+  text      String
+  createdAt DateTime      @default(now())
+  ride      RideBooking   @relation(fields: [rideId], references: [id], onDelete: Cascade)
+}
+

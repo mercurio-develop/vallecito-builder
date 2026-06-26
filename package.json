@@ -9,9 +9,37 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.72",
+    "@ai-sdk/react": "^3.0.179",
+    "@base-ui/react": "^1.4.1",
+    "@lucia-auth/adapter-prisma": "^4.0.1",
+    "@prisma/client": "^6.19.3",
+    "@types/geojson": "^7946.0.16",
+    "@types/mapbox-gl": "^3.4.1",
+    "@types/uuid": "^10.0.0",
+    "@upstash/redis": "^1.38.0",
+    "ai": "^6.0.177",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.38.0",
+    "lucia": "^3.2.2",
+    "lucide-react": "^1.14.0",
+    "mapbox-gl": "^3.23.1",
     "next": "16.2.6",
+    "oslo": "^1.2.1",
+    "posthog-js": "^1.373.2",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-intersection-observer": "^10.0.3",
+    "react-map-gl": "^8.1.1",
+    "react-markdown": "^10.1.0",
+    "resend": "^6.12.3",
+    "stripe": "^22.1.1",
+    "tailwind-merge": "^3.6.0",
+    "twilio": "^6.0.2",
+    "uuid": "^14.0.0",
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -20,6 +48,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
