@@ -32,7 +32,28 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window !== 'undefined' && window.performance && window.performance.measure) {
+                  const originalMeasure = window.performance.measure;
+                  window.performance.measure = function() {
+                    try {
+                      return originalMeasure.apply(this, arguments);
+                    } catch (e) {
+                      return null;
+                    }
+                  };
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
+
