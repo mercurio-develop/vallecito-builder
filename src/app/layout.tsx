@@ -1,3 +1,16 @@
+if (typeof globalThis !== 'undefined' && globalThis.performance && globalThis.performance.measure) {
+  const originalMeasure = globalThis.performance.measure;
+  // @ts-ignore
+  globalThis.performance.measure = function(...args: any[]) {
+    try {
+      // @ts-ignore
+      return originalMeasure.apply(this, args);
+    } catch (e) {
+      return null as any;
+    }
+  };
+}
+
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
