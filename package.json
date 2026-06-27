@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "POSTGRES_PRISMA_URL=postgresql://localhost:5432/dummy POSTGRES_URL_NON_POOLING=postgresql://localhost:5432/dummy prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
   },
