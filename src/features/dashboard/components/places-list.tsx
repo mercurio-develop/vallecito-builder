@@ -115,10 +115,10 @@ export function PlacesList({ initialPlaces = [], currentUser }: PlacesListProps)
         </div>
 
         {/* Category Pill Filters */}
-        <div className="flex flex-wrap gap-2 items-center w-full md:w-auto">
+        <div className="flex flex-nowrap overflow-x-auto gap-2 items-center w-full md:flex-1 scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden px-1 py-0.5">
           <button
             onClick={() => setSelectedCategory("ALL")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               selectedCategory === "ALL"
                 ? "bg-slate-900 text-white"
                 : "bg-slate-50 text-slate-600 hover:bg-slate-100"
@@ -130,7 +130,7 @@ export function PlacesList({ initialPlaces = [], currentUser }: PlacesListProps)
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === cat
                   ? "bg-slate-900 text-white"
                   : "bg-slate-50 text-slate-600 hover:bg-slate-100"
