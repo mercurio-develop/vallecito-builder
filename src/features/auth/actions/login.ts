@@ -15,6 +15,36 @@ export async function login(_: unknown, formData: FormData) {
     return { error: "Email and password required" }
   }
 
+  // Auto-seed testing user in production database if it doesn't exist yet
+  const testEmail = "testing-user@vallecito.co"
+  let testUser = await prisma.user.findUnique({ where: { email: testEmail } })
+  if (!testUser) {
+    try {
+      const passwordHash = await new Argon2id().hash("admin123")
+      let agency = await prisma.agency.findFirst()
+      if (!agency) {
+        agency = await prisma.agency.create({
+          data: {
+            name: "Vallecito Travel",
+            slug: "vallecito-travel",
+            email: "contact@vallecitotravel.com",
+          }
+        })
+      }
+      await prisma.user.create({
+        data: {
+          email: testEmail,
+          passwordHash,
+          name: "Testing User",
+          agencyId: agency.id,
+          role: "AGENCY_OWNER"
+        }
+      })
+    } catch (e) {
+      console.error("Failed to auto-seed testing user dynamically:", e)
+    }
+  }
+
   const user = await prisma.user.findUnique({ where: { email } })
 
   if (!user) {
@@ -34,3 +64,4 @@ export async function login(_: unknown, formData: FormData) {
 
   redirect(dashboardTripsPath())
 }
+
