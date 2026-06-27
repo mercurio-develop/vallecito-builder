@@ -58,6 +58,33 @@ model Business {
   agencyId     String?
   isShared     Boolean @default(true)
   agency       Agency? @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+
+  // Merged columns from unlockcusco to prevent schema data loss drops:
+  verificationToken  String?                 @unique
+  longDescription    String?
+  longDescriptionEs  String?
+  categoryEs         String?
+  descriptionEs      String?
+  nameEs             String?
+  seoMetaDescEs      String?
+  seoMetaTitleEs     String?
+  specialtiesEs      String?
+  taglineEs          String?
+  googleMapsUrl      String?
+  googlePlaceId      String?                 @unique
+  openingHours       Json?
+  priceLevel         String?
+  website            String?
+  affiliateLinks     Json?
+  bookingType        String                  @default("INSTANT")
+  minAdvanceHours    Int                     @default(0)
+  
+  // Relations from unlockcusco:
+  premiumProfile     BusinessPremiumProfile?
+  services           BusinessService[]
+  leads              Lead[]
+  reviews            Review[]
+  campaignLogs       WhatsAppCampaignLog[]
 }
 
 model TourPackage {
@@ -86,6 +113,16 @@ model TourPackage {
   heroImage     String?
   business      Business? @relation(fields: [businessId], references: [id], onDelete: Cascade)
   tripDays      TripDay[]
+
+  // Merged columns from unlockcusco to prevent schema data loss drops:
+  itinerary     String    @default("[]")
+  gallery       String    @default("[]")
+  descriptionEs String?
+  highlightsEs  String?
+  includedEs    String?
+  itineraryEs   String?
+  taglineEs     String?
+  titleEs       String?
 }
 
 enum TravelerArchetype {
@@ -264,4 +301,83 @@ model RideMessage {
   createdAt DateTime      @default(now())
   ride      RideBooking   @relation(fields: [rideId], references: [id], onDelete: Cascade)
 }
+
+model BusinessService {
+  id            String   @id @default(cuid())
+  businessId    String
+  title         String
+  description   String
+  priceUsd      Float
+  durationMins  Int      @default(60)
+  imageUrl      String?
+  descriptionEs String?
+  titleEs       String?
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id           String   @id @default(uuid())
+  businessId   String
+  touristName  String
+  touristEmail String
+  touristPhone String?
+  date         DateTime
+  createdAt    DateTime @default(now())
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  businessId String
+  text       String
+  textEn     String?
+  textEs     String?
+  author     String
+  rating     Int
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model BusinessPremiumProfile {
+  id              String           @id @default(cuid())
+  businessId      String           @unique
+  logoUrl         String?
+  coverPhotoUrl   String?
+  primaryColor    String?
+  accentColor     String?
+  fonts           String?
+  visionStatement String?
+  pillars         BusinessPillar[]
+  business        Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model BusinessPillar {
+  id               String                 @id @default(cuid())
+  premiumProfileId String
+  title            String
+  description      String
+  icon             String?
+  descriptionEs    String?
+  titleEs          String?
+  premiumProfile   BusinessPremiumProfile @relation(fields: [premiumProfileId], references: [id], onDelete: Cascade)
+}
+
+model SavedItinerary {
+  id        String   @id @default(cuid())
+  shortId   String   @unique
+  state     Json
+  createdAt DateTime @default(now())
+  userId    String?
+}
+
+model WhatsAppCampaignLog {
+  id               String   @id @default(cuid())
+  businessId       String
+  categoryTargeted String
+  phone            String
+  status           String   @default("PENDING")
+  errorMessage     String?
+  sentAt           DateTime @default(now())
+  business         Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
 
