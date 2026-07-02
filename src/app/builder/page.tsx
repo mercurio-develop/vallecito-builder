@@ -1,16 +1,3 @@
-if (typeof globalThis !== 'undefined' && globalThis.performance && globalThis.performance.measure) {
-  const originalMeasure = globalThis.performance.measure;
-  // @ts-ignore
-  globalThis.performance.measure = function(...args: any[]) {
-    try {
-      // @ts-ignore
-      return originalMeasure.apply(this, args);
-    } catch (e) {
-      return null as any;
-    }
-  };
-}
-
 import { Suspense } from "react"
 import { BuilderProvider } from "@/features/pro-builder/store/builder-context"
 import { ProBuilderMain } from "@/features/pro-builder/components/ProBuilderMain"

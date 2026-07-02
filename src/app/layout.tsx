@@ -1,15 +1,4 @@
-if (typeof globalThis !== 'undefined' && globalThis.performance && globalThis.performance.measure) {
-  const originalMeasure = globalThis.performance.measure;
-  // @ts-ignore
-  globalThis.performance.measure = function(...args: any[]) {
-    try {
-      // @ts-ignore
-      return originalMeasure.apply(this, args);
-    } catch (e) {
-      return null as any;
-    }
-  };
-}
+import "@/lib/performance-measure-patch";
 
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -45,26 +34,6 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (typeof window !== 'undefined' && window.performance && window.performance.measure) {
-                  const originalMeasure = window.performance.measure;
-                  window.performance.measure = function() {
-                    try {
-                      return originalMeasure.apply(this, arguments);
-                    } catch (e) {
-                      return null;
-                    }
-                  };
-                }
-              })();
-            `,
-          }}
-        />
-      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
